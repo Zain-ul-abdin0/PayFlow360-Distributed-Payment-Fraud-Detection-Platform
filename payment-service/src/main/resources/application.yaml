@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: prep
+
+  datasource:
+    url: jdbc:postgresql://localhost:5433/prep
+    username: postgres
+    password: "0000"
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true

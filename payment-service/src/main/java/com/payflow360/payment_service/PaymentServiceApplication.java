@@ -1,13 +1,13 @@
-package com.example.prep;
+package com.payflow360.payment_service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class PrepApplication {
+public class PaymentServiceApplication {
+
 	public static void main(String[] args) {
-		SpringApplication.run(PrepApplication.class, args);
-		System.out.println("Zain");
+		SpringApplication.run(PaymentServiceApplication.class, args);
 	}
 
 }
