@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: prep-postgres
+    environment:
+      POSTGRES_DB: prep
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "0000"
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
