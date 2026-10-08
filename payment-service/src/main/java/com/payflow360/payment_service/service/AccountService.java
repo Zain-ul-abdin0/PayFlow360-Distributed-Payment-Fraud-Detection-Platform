@@ -5,6 +5,9 @@ import com.payflow360.payment_service.dto.CreateAccountRequest;
 import com.payflow360.payment_service.dto.TransferRequest;
 import com.payflow360.payment_service.dto.TransferResponse;
 import com.payflow360.payment_service.entity.Account;
+import com.payflow360.payment_service.exception.AccountNotFoundException;
+import com.payflow360.payment_service.exception.CurrencyMismatchException;
+import com.payflow360.payment_service.exception.InsufficientBalanceException;
 import com.payflow360.payment_service.repository.AccountRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,7 +80,7 @@ public class AccountService {
         Account sourceAccount = accountRepository
                 .findByAccountNumber(request.sourceAccountNumber())
                 .orElseThrow(() ->
-                        new IllegalArgumentException(
+                        new AccountNotFoundException(
                                 "Source account not found: "
                                         + request.sourceAccountNumber()
                         )
@@ -86,7 +89,7 @@ public class AccountService {
         Account destinationAccount = accountRepository
                 .findByAccountNumber(request.destinationAccountNumber())
                 .orElseThrow(() ->
-                        new IllegalArgumentException(
+                        new AccountNotFoundException(
                                 "Destination account not found: "
                                         + request.destinationAccountNumber()
                         )
@@ -95,7 +98,7 @@ public class AccountService {
         if (!sourceAccount.getCurrency()
                 .equals(destinationAccount.getCurrency())) {
 
-            throw new IllegalArgumentException(
+            throw new CurrencyMismatchException(
                     "Currency mismatch between accounts"
             );
         }
@@ -103,7 +106,7 @@ public class AccountService {
         if (sourceAccount.getBalance()
                 .compareTo(request.amount()) < 0) {
 
-            throw new IllegalArgumentException(
+            throw new InsufficientBalanceException(
                     "Insufficient balance"
             );
         }
