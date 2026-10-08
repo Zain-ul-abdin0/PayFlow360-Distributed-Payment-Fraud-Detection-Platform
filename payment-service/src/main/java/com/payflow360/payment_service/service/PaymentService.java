@@ -2,12 +2,12 @@ package com.payflow360.payment_service.service;
 
 import com.payflow360.payment_service.dto.CreatePaymentRequest;
 import com.payflow360.payment_service.dto.PaymentResponse;
+import com.payflow360.payment_service.dto.TransferRequest;
 import com.payflow360.payment_service.entity.Payment;
 import com.payflow360.payment_service.entity.PaymentStatus;
 import com.payflow360.payment_service.repository.PaymentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,11 +16,15 @@ import java.util.UUID;
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
+    private final AccountService accountService;
 
-    public PaymentService(PaymentRepository paymentRepository) {
+    public PaymentService(
+            PaymentRepository paymentRepository,
+            AccountService accountService) {
+
         this.paymentRepository = paymentRepository;
+        this.accountService = accountService;
     }
-
     @Transactional
     public PaymentResponse createPayment(
             CreatePaymentRequest request,
@@ -54,6 +58,17 @@ public class PaymentService {
                 .build();
 
         Payment savedPayment = paymentRepository.save(payment);
+
+        accountService.transfer(
+                new TransferRequest(
+                        request.sourceAccountId(),
+                        request.destinationAccountId(),
+                        request.amount()
+                )
+        );
+
+        savedPayment.setStatus(PaymentStatus.COMPLETED);
+        savedPayment.setUpdatedAt(LocalDateTime.now());
 
         return new PaymentResponse(
                 savedPayment.getTransactionId(),
